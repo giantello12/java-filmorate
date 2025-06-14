@@ -60,15 +60,15 @@ public class FilmController {
             log.error(error);
             throw new ValidationException(error);
         }
-        int MAX_DESCRIPTION_LENGTH = 200;
-        if (film.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
-            String error = "Описание не должно быть длиннее " + MAX_DESCRIPTION_LENGTH + " символов!";
+        int maxDescriptionLength = 200;
+        if (film.getDescription().length() > maxDescriptionLength) {
+            String error = "Описание не должно быть длиннее " + maxDescriptionLength + " символов!";
             log.error(error);
             throw new ValidationException(error);
         }
-        LocalDate EARLIEST_DATE = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate().isBefore(EARLIEST_DATE)) {
-            String error = "Дата не должна быть раньше " + EARLIEST_DATE + "!";
+        LocalDate earliestDate = LocalDate.of(1895, 12, 28);
+        if (film.getReleaseDate().isBefore(earliestDate)) {
+            String error = "Дата не должна быть раньше " + earliestDate + "!";
             log.error(error);
             throw new ValidationException(error);
         }
