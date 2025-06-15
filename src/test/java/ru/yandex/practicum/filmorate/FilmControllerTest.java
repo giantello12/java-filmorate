@@ -20,33 +20,33 @@ class FilmControllerTest {
     void setUp() {
         filmController = new FilmController();
         validFilm = new Film(0L, "Valid Film", "Valid description",
-                LocalDate.of(2000, 1, 1), Duration.ofMinutes(120));
+                LocalDate.of(2000, 1, 1), 120);
     }
 
     @Test
     void addFilm_WithValidFilm_ShouldAddFilmAndReturnIt() {
-        Film createdFilm = filmController.addFilm(validFilm);
+        Film createdFilm = filmController.create(validFilm);
 
         assertNotNull(createdFilm.getId(), "ID должен быть установлен");
-        assertEquals(0, createdFilm.getId(), "Неверный ID фильма");
+        assertEquals(1, createdFilm.getId(), "Неверный ID фильма");
         assertEquals("Valid Film", createdFilm.getName(), "Название не совпадает");
         assertEquals("Valid description", createdFilm.getDescription(), "Описание не совпадает");
         assertEquals(LocalDate.of(2000, 1, 1), createdFilm.getReleaseDate(), "Дата релиза не совпадает");
-        assertEquals(Duration.ofMinutes(120), createdFilm.getDuration(), "Продолжительность не совпадает");
+        assertEquals(120, createdFilm.getDuration(), "Продолжительность не совпадает");
 
         assertEquals(1, filmController.getFilms().size(), "Фильм не добавлен в хранилище");
     }
 
     @Test
     void addFilm_WithEmptyName_ShouldThrowValidationException() {
-        Film emptyFilm = new Film(0L, "", "", LocalDate.now(), Duration.ofMinutes(1));
+        Film emptyFilm = new Film(0L, "", "", LocalDate.now(), 1);
         emptyFilm.setDescription("");
         emptyFilm.setReleaseDate(LocalDate.now());
-        emptyFilm.setDuration(Duration.ZERO);
+        emptyFilm.setDuration(0);
 
         ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> filmController.addFilm(emptyFilm),
+                () -> filmController.create(emptyFilm),
                 "Ожидалось ValidationException при пустом названии фильма!"
         );
 

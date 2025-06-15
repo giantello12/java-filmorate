@@ -28,14 +28,16 @@ public class UserController {
     public User create(@RequestBody User user) {
         log.info("Обработка запроса на создание пользователя");
         validateUser(user);
-        users.put(getNextId(), user);
+        Long userId = getNextId();
+        user.setId(userId);
+        users.put(userId, user);
         return user;
     }
 
     @PutMapping
     public User update(@RequestBody User user) {
         log.info("Обработка запроса на обновление пользователя");
-        if (users.get(user.getId()) == null || user.getId() == null) {
+        if (user.getId() == null || !users.containsKey(user.getId())) {
             String error = "Пользователь с данным ID не существует!";
             log.error(error);
             throw new ValidationException(error);
@@ -52,20 +54,20 @@ public class UserController {
     }
 
     private void validateUser(User user) {
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             String error = "Некорректный email!";
             log.error(error);
             throw new ValidationException(error);
         }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             String error = "Некорректный login!";
             log.error(error);
             throw new ValidationException(error);
         }
-        if (user.getName().isBlank()) {
-            user.setName(user.getLogin());
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName("common");
         }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
+        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
             String error = "Дата рождения не может быть в будущем!";
             log.error(error);
             throw new ValidationException(error);

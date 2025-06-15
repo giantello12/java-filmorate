@@ -25,7 +25,7 @@ class UserControllerTest {
     void create_WithValidUser_ShouldAddUserAndReturnIt() {
         User createdUser = userController.create(validUser);
         assertNotNull(createdUser.getId(), "ID должен быть установлен");
-        assertEquals(0, createdUser.getId(), "Неверный ID пользователя");
+        assertEquals(1, createdUser.getId(), "Неверный ID пользователя");
         assertEquals("valid@example.com", createdUser.getEmail(), "Email не совпадает");
         assertEquals("valid_login", createdUser.getLogin(), "Логин не совпадает");
         assertEquals("Valid User", createdUser.getName(), "Имя не совпадает");
