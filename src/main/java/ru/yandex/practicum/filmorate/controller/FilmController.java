@@ -3,9 +3,10 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
-
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+
+import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -20,13 +21,19 @@ import org.slf4j.LoggerFactory;
 @Setter
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-
-    public HashMap<Long, Film> films = new HashMap<>();
+    private final HashMap<Long, Film> films = new HashMap<>();
+    private static final LocalDate EARLIEST_DATE = LocalDate.of(1895, 12, 28);
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         log.info("Обработка запроса на добавление фильма");
-        validateFilm(film);
+
+        if (film.getReleaseDate().isBefore(EARLIEST_DATE)) {
+            String error = "Дата не должна быть раньше " + EARLIEST_DATE + "!";
+            log.error(error);
+            throw new ValidationException(error);
+        }
+
         Long filmId = getNextId();
         film.setId(filmId);
         films.put(filmId, film);
@@ -34,60 +41,33 @@ public class FilmController {
         return film;
     }
 
-    public HashMap<Long, Film> getFilms() {
-        return films;
-    }
-
     @PutMapping
-    public Film update(@RequestBody Film film) {
+    public Film update(@Valid @RequestBody Film film) {
         log.info("Обработка запроса на обновление фильма");
-        if (film.getId() == null || films.get(film.getId()) == null) {
+
+        if (film.getId() == null || !films.containsKey(film.getId())) {
             String error = "Фильм с данным ID не существует!";
             log.error(error);
             throw new ValidationException(error);
         }
-        validateFilm(film);
+
+        if (film.getReleaseDate().isBefore(EARLIEST_DATE)) {
+            String error = "Дата не должна быть раньше " + EARLIEST_DATE + "!";
+            log.error(error);
+            throw new ValidationException(error);
+        }
+
         films.put(film.getId(), film);
         return film;
     }
 
     @GetMapping
-    public Collection<Film> allFilms() {
+    public Collection<Film> getFilms() {
         log.info("Обработка запроса на получение всех фильмов");
         return films.values();
     }
 
-    private void validateFilm(Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            String error = "Название не должно быть пустым!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-        int maxDescriptionLength = 200;
-        if (film.getDescription() == null || film.getDescription().length() > maxDescriptionLength) {
-            String error = "Описание не должно быть длиннее " + maxDescriptionLength + " символов!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-        LocalDate earliestDate = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate() == null || film.getReleaseDate().isBefore(earliestDate)) {
-            String error = "Дата не должна быть раньше " + earliestDate + "!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-        if (film.getDuration() <= 0) {
-            String error = "Продолжительность фильма не может быть меньше 0!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-    }
-
     private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return films.keySet().stream().mapToLong(id -> id).max().orElse(0) + 1;
     }
 }
