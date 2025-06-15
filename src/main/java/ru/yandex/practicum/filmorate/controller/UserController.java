@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> allUsers() {
+    public Collection<User> getUsers() {
         log.info("Обработка запроса на получение всех пользователей");
         return users.values();
     }
