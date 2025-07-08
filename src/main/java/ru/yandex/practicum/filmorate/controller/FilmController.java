@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/films")
-@Getter
-@Setter
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final HashMap<Long, Film> films = new HashMap<>();
