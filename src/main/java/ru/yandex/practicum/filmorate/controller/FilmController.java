@@ -1,71 +1,76 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final HashMap<Long, Film> films = new HashMap<>();
+    private final FilmStorage storage;
+    private final FilmService service;
     private static final LocalDate EARLIEST_DATE = LocalDate.of(1895, 12, 28);
+
+    @Autowired
+    public FilmController(FilmStorage storage, FilmService service) {
+        this.storage = storage;
+        this.service = service;
+    }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        log.info("Обработка запроса на добавление фильма");
-
-        if (film.getReleaseDate().isBefore(EARLIEST_DATE)) {
-            String error = "Дата не должна быть раньше " + EARLIEST_DATE + "!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-
-        Long filmId = getNextId();
-        film.setId(filmId);
-        films.put(filmId, film);
-        log.info("Добавлен фильм: ID={}, Название={}", film.getId(), film.getName());
-        return film;
+        validateReleaseDate(film);
+        return storage.create(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        log.info("Обработка запроса на обновление фильма");
-
-        if (film.getId() == null || !films.containsKey(film.getId())) {
-            String error = "Фильм с данным ID не существует!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-
-        if (film.getReleaseDate().isBefore(EARLIEST_DATE)) {
-            String error = "Дата не должна быть раньше " + EARLIEST_DATE + "!";
-            log.error(error);
-            throw new ValidationException(error);
-        }
-
-        films.put(film.getId(), film);
-        return film;
+        validateReleaseDate(film);
+        return storage.update(film);
     }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        log.info("Обработка запроса на получение всех фильмов");
-        return films.values();
+        return storage.getAllFilms();
     }
 
-    private long getNextId() {
-        return films.keySet().stream().mapToLong(id -> id).max().orElse(0) + 1;
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(
+            @PathVariable long id,
+            @PathVariable long userId) {
+        service.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(
+            @PathVariable long id,
+            @PathVariable long userId) {
+        service.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(
+            @RequestParam(defaultValue = "10") int count) {
+        return service.getPopularFilms(count);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable long id) {
+        return storage.getFilmById(id);
+    }
+
+    private void validateReleaseDate(Film film) {
+        if (film.getReleaseDate().isBefore(EARLIEST_DATE)) {
+            String error = "Дата не должна быть раньше " + EARLIEST_DATE + "!";
+            throw new ValidationException(error);
+        }
     }
 }
