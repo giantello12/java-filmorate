@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Validated
 public class UserController {
     private final UserStorage storage;
     private final UserService service;
@@ -46,7 +49,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+    public void addFriend(
+            @Positive
+            @PathVariable long id,
+            @Positive
+            @PathVariable long friendId) {
         service.addFriend(id, friendId);
     }
 
@@ -62,7 +69,9 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(
+            @Positive
             @PathVariable long id,
+            @Positive
             @PathVariable long otherId) {
         return service.getCommonFriends(id, otherId);
     }

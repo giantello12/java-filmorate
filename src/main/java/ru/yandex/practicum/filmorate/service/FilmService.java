@@ -2,8 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -53,13 +52,13 @@ public class FilmService {
         return filmStorage.getAllFilms().stream()
                 .filter(f -> f.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new FilmNotFoundException("Фильм с данным ID не найден"));
+                .orElseThrow(() -> new NotFoundException("Фильм", id));
     }
 
     private void validateUserExistence(long id) {
         userStorage.getAllUsers().stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с данным ID не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь", id));
     }
 }

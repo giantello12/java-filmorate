@@ -11,5 +11,4 @@ public class ErrorResponse {
         this.error = "runtime_error";
         this.message = message;
     }
-
 }
