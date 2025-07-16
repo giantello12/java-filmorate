@@ -28,4 +28,10 @@ public class User {
     private LocalDate birthday;
 
     private final Set<Long> friends = new HashSet<>();
+
+    private Friendship friendship;
+}
+
+enum Friendship {
+    CONFIRMED, SENT
 }

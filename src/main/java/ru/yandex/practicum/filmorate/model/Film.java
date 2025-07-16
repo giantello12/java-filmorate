@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -28,4 +30,39 @@ public class Film {
 
     private final Set<Long> likes = new HashSet<>();
 
+    private Set<Genre> genres = new HashSet<>();
+
+    private MpaRating mpa;
+}
+
+@Getter
+enum Genre {
+    COMEDY("Комедия"),
+    DRAMA("Драма"),
+    ANIMATION("Мультфильм"),
+    THRILLER("Триллер"),
+    DOCUMENTARY("Документальный"),
+    ACTION("Боевик");
+
+    private final String name;
+
+    Genre(String name) {
+        this.name = name;
+    }
+
+}
+
+@Getter
+enum MpaRating {
+    G("G"),
+    PG("PG"),
+    PG_13("PG-13"),
+    R("R"),
+    NC_17("NC-17");
+
+    private final String description;
+
+    MpaRating(String description) {
+        this.description = description;
+    }
 }
