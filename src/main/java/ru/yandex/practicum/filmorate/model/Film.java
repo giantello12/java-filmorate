@@ -35,34 +35,3 @@ public class Film {
     private MpaRating mpa;
 }
 
-@Getter
-enum Genre {
-    COMEDY("Комедия"),
-    DRAMA("Драма"),
-    ANIMATION("Мультфильм"),
-    THRILLER("Триллер"),
-    DOCUMENTARY("Документальный"),
-    ACTION("Боевик");
-
-    private final String name;
-
-    Genre(String name) {
-        this.name = name;
-    }
-
-}
-
-@Getter
-enum MpaRating {
-    G("G"),
-    PG("PG"),
-    PG_13("PG-13"),
-    R("R"),
-    NC_17("NC-17");
-
-    private final String description;
-
-    MpaRating(String description) {
-        this.description = description;
-    }
-}

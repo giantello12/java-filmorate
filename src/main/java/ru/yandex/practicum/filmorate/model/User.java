@@ -30,8 +30,13 @@ public class User {
     private final Set<Long> friends = new HashSet<>();
 
     private Friendship friendship;
+
+    public User(Long id, String email, String login, String name, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
 }
 
-enum Friendship {
-    CONFIRMED, SENT
-}

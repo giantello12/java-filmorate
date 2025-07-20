@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,7 +26,7 @@ class FilmControllerTest {
         UserStorage userStorage = new InMemoryUserStorage();
         filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage));
         validFilm = new Film(0L, "Valid Film", "Valid description",
-                LocalDate.of(2000, 1, 1), 120);
+                LocalDate.of(2000, 1, 1), 120, new HashSet<>(), mpa);
     }
 
     @Test
